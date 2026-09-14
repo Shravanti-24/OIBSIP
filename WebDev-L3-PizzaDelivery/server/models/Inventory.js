@@ -51,6 +51,19 @@ const inventorySchema = new Schema(
       type: Boolean,
       default: true,
     },
+    // Dedup guard for the low-stock cron (see services/lowStockAlert.service.js):
+    // true once an email has gone out for the *current* below-threshold
+    // spell, so an every-minute check doesn't re-alert every run. Cleared
+    // as soon as the item's status returns to in-stock, so a later dip
+    // below threshold is treated as a new event and alerts again.
+    lowStockAlertSent: {
+      type: Boolean,
+      default: false,
+    },
+    lowStockAlertSentAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

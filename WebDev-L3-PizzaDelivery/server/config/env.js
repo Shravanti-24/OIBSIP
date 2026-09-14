@@ -27,6 +27,9 @@ export const env = {
   adminName: process.env.ADMIN_NAME || '',
   adminEmail: process.env.ADMIN_EMAIL || '',
   adminPassword: process.env.ADMIN_PASSWORD || '',
+  // Cron expression for the low-stock check (jobs/lowStockCron.job.js).
+  // Unset uses the module's own demo-friendly default (every minute).
+  lowStockCronSchedule: process.env.LOW_STOCK_CRON_SCHEDULE || '',
 };
 
 export const isProduction = env.nodeEnv === 'production';

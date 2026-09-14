@@ -10,7 +10,10 @@ import OrderStatusProgress from '../components/OrderStatusProgress';
 import { formatINR } from '../utils/currency';
 import { describeOrderItem } from '../utils/orderItems';
 import { useRazorpayCheckout } from '../hooks/useRazorpayCheckout';
+import { useOrderStatusPolling } from '../hooks/useOrderStatusPolling';
 import * as orderService from '../services/order.service';
+
+const TERMINAL_ORDER_STATUS = 'Sent to Delivery';
 
 function formatDate(dateString) {
   return new Date(dateString).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
@@ -22,11 +25,31 @@ export default function OrderDetail() {
   const [order, setOrder] = useState(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [pollFailing, setPollFailing] = useState(false);
   const { payForOrder, isBusy: isPaying, error: paymentError } = useRazorpayCheckout();
   const justPaid = Boolean(location.state?.justPaid);
 
+  // Only poll a loaded, paid, unblocked order that hasn't reached its final
+  // status yet - no point polling before load, for a blocked/unpaid order,
+  // or once delivery is done.
+  const isActivelyTracked =
+    !isLoading &&
+    Boolean(order) &&
+    order.paymentStatus === 'paid' &&
+    order.fulfillmentStatus !== 'blocked' &&
+    Boolean(order.orderStatus) &&
+    order.orderStatus !== TERMINAL_ORDER_STATUS;
+
+  useOrderStatusPolling({
+    orderId: order?._id,
+    active: isActivelyTracked,
+    onUpdate: setOrder,
+    onError: setPollFailing,
+  });
+
   function load() {
     setError('');
+    setPollFailing(false);
     setIsLoading(true);
     orderService
       .fetchOrderById(id)
@@ -112,9 +135,14 @@ export default function OrderDetail() {
 
             {order.paymentStatus === 'paid' && order.fulfillmentStatus !== 'blocked' && order.orderStatus && (
               <div className="mt-6 border-t border-crust-100 pt-6">
-                <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink-900/50">
-                  Order tracking
-                </h2>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-900/50">Order tracking</h2>
+                  {isActivelyTracked && (
+                    <span className="text-xs text-ink-900/40">
+                      {pollFailing ? 'Unable to refresh - retrying...' : 'Updates automatically'}
+                    </span>
+                  )}
+                </div>
                 <OrderStatusProgress status={order.orderStatus} />
               </div>
             )}

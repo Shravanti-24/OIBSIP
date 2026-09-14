@@ -13,7 +13,8 @@ planned for later phases.
 - **Frontend:** React 19, Vite, React Router, Tailwind CSS, Axios
 - **Backend:** Node.js, Express 5, MongoDB, Mongoose
 - **Auth:** JWT (httpOnly cookie), bcryptjs password hashing
-- **Email:** Resend (transactional email for verification / password reset)
+- **Email:** Resend (transactional email for verification / password reset / low-stock alerts)
+- **Scheduling:** node-cron (low-stock inventory check)
 - **Testing:** Vitest, Supertest
 
 ## Project structure
@@ -109,6 +110,46 @@ configuration is needed in development.
   reset). A reset token is deleted the moment it's used, so it cannot be replayed.
 - Forgot-password and resend-verification endpoints return an identical response
   whether or not the account exists, to prevent email enumeration.
+
+## Real-time order status updates (polling)
+
+The user's order detail page (`/orders/:id`) polls `GET /api/orders/:id` every 5
+seconds while the order is paid, not blocked by a stock issue, and hasn't yet
+reached `Sent to Delivery` (`client/src/hooks/useOrderStatusPolling.js`). The
+existing endpoint already scopes results to the requesting user, so no separate
+status route was needed and a user still can never poll someone else's order.
+Polling stops automatically at `Sent to Delivery`, on unmount, and while the
+page is loading; a failed poll keeps the last known status on screen and retries
+on the next tick rather than surfacing an error.
+
+**To demonstrate:** log in as a user, open a paid order, and in a second
+session (admin) advance its status via the admin orders page. The user's page
+updates within ~5 seconds without a manual refresh, and polling stops once the
+order reaches `Sent to Delivery`.
+
+## Low-stock automation
+
+A cron job (`server/jobs/lowStockCron.job.js`, node-cron) runs independently of
+any request and checks every inventory item against its configured threshold
+(`server/services/lowStockAlert.service.js`), using the same low-stock/out-of-stock
+definitions as the admin inventory dashboard. When an item is newly below its
+threshold, one consolidated email is sent to `ADMIN_EMAIL` via the existing
+Resend-based email service. Each affected item is then marked
+`lowStockAlertSent: true` so the next run does not re-alert for the same
+unresolved shortage; the flag is cleared as soon as the item is restocked back
+to its threshold, so a later shortage triggers a fresh alert. A failed email
+send is never marked as sent, so the next scheduled run retries it.
+
+The schedule defaults to every minute (`* * * * *`) so the feature is easy to
+demonstrate; set `LOW_STOCK_CRON_SCHEDULE` in `.env` to something coarser (e.g.
+`*/15 * * * *`) for production.
+
+**To demonstrate:** set `ADMIN_EMAIL` and (optionally) `RESEND_API_KEY` in
+`server/.env`, start the server, log in as admin, and lower an ingredient's
+quantity below its threshold on the inventory page. Within a minute, an alert
+is sent (or logged to the server console if `RESEND_API_KEY` is unset) - repeat
+runs do not resend it. Restock the item back to/above its threshold and the
+alert flag resets; drop it below threshold again to see a new alert.
 
 ## Environment variables
 

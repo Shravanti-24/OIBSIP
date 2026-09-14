@@ -69,6 +69,53 @@ export function passwordResetEmailTemplate({ name, resetUrl }) {
   };
 }
 
+/**
+ * items: [{ name, category, quantity, threshold, unit, status }], status is
+ * one of the Inventory STOCK_STATUS values ('low-stock' | 'out-of-stock').
+ * Kept as one consolidated email per alert run rather than one per item.
+ */
+export function lowStockAlertEmailTemplate({ items }) {
+  const rows = items
+    .map(
+      (item) => `
+        <tr>
+          <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.name)}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;text-transform:capitalize;">${escapeHtml(item.category)}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.quantity)}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.threshold)}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.unit)}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;font-weight:600;color:${
+            item.status === 'out-of-stock' ? '#b91c1c' : '#b45309'
+          };">${item.status === 'out-of-stock' ? 'OUT OF STOCK' : 'LOW STOCK'}</td>
+        </tr>`,
+    )
+    .join('');
+
+  return {
+    subject: 'Pizza Delivery — Low Stock Alert',
+    html: `
+      <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
+        <h2>Pizza Delivery Inventory Alert</h2>
+        <p>The following inventory items are below their configured stock thresholds:</p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <thead>
+            <tr style="text-align:left;background:#f9f9f9;">
+              <th style="padding:8px;">Ingredient</th>
+              <th style="padding:8px;">Category</th>
+              <th style="padding:8px;">Current Stock</th>
+              <th style="padding:8px;">Threshold</th>
+              <th style="padding:8px;">Unit</th>
+              <th style="padding:8px;">Status</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p style="margin-top:16px;">Please update inventory from the admin dashboard.</p>
+      </div>
+    `,
+  };
+}
+
 function escapeHtml(value) {
   return String(value)
     .replace(/&/g, '&amp;')
