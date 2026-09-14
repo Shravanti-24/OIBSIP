@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import ErrorState from '../components/ErrorState';
 import EmptyState from '../components/EmptyState';
-import { PaymentStatusBadge, OrderStatusBadge } from '../components/StatusBadge';
+import { PaymentStatusBadge, OrderStatusBadge, FulfillmentStatusBadge } from '../components/StatusBadge';
 import { formatINR } from '../utils/currency';
 import { summarizeOrderItems } from '../utils/orderItems';
 import * as orderService from '../services/order.service';
@@ -78,6 +78,7 @@ export default function Orders() {
                 <div className="flex flex-wrap items-center gap-2">
                   <PaymentStatusBadge status={order.paymentStatus} />
                   <OrderStatusBadge status={order.orderStatus} />
+                  <FulfillmentStatusBadge status={order.fulfillmentStatus} />
                 </div>
               </div>
               <p className="mt-3 text-sm text-ink-900/80">{summarizeOrderItems(order.items)}</p>

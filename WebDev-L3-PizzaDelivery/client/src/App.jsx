@@ -14,6 +14,7 @@ import OrderReview from './pages/OrderReview';
 import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminInventory from './pages/AdminInventory';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
 
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/inventory" element={<AdminInventory />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

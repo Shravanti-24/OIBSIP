@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Order from '../models/Order.js';
 import { createRazorpayOrderForAmount, verifyPaymentSignature } from '../services/payment.service.js';
+import * as inventoryService from '../services/inventory.service.js';
 import { env } from '../config/env.js';
 import { toPaise } from '../utils/money.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -92,15 +93,62 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('Payment verification failed');
   }
 
-  order.paymentStatus = 'paid';
-  order.razorpayPaymentId = razorpayPaymentId;
-  order.razorpaySignature = signature;
-  order.orderStatus = 'Order Received';
-  await order.save();
+  // Atomically flip pending -> paid so a duplicate/concurrent verification
+  // request for this same order can never win this race twice. Only the
+  // request that actually performs this transition goes on to deduct
+  // inventory; a request that loses the race falls through to the
+  // "already verified" response below.
+  const claimed = await Order.findOneAndUpdate(
+    { _id: order._id, paymentStatus: { $ne: 'paid' } },
+    {
+      $set: {
+        paymentStatus: 'paid',
+        razorpayPaymentId,
+        razorpaySignature: signature,
+      },
+    },
+    { returnDocument: 'after' },
+  );
+
+  if (!claimed) {
+    const existing = await Order.findById(order._id);
+    return res.status(200).json({
+      success: true,
+      message: 'Payment already verified',
+      data: { order: existing },
+    });
+  }
+
+  // Stock is only ever consumed here, after payment has been verified -
+  // never at order creation, checkout start, or a failed/cancelled payment.
+  try {
+    await inventoryService.consumeForOrder(claimed);
+    claimed.inventoryDeducted = true;
+    claimed.inventoryDeductedAt = new Date();
+    claimed.fulfillmentStatus = 'confirmed';
+    claimed.orderStatus = 'Order Received';
+    await claimed.save();
+  } catch (error) {
+    // The payment was genuinely captured by Razorpay, so paymentStatus
+    // stays 'paid' - it would be dishonest to call this a failed payment.
+    // Fulfillment is what failed: record that distinctly rather than
+    // falsely marking the order as normally received into the kitchen.
+    claimed.fulfillmentStatus = 'blocked';
+    await claimed.save();
+    // eslint-disable-next-line no-console
+    console.error(`[inventory] Order ${claimed._id} paid but could not be fulfilled:`, error.message);
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'Payment was successful, but one or more items in your order are currently unavailable. Our team will reach out to resolve this.',
+      data: { order: claimed },
+    });
+  }
 
   res.status(200).json({
     success: true,
     message: 'Payment verified successfully',
-    data: { order },
+    data: { order: claimed },
   });
 });

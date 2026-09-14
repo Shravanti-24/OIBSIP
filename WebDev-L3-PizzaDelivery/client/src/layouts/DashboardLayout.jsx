@@ -18,6 +18,11 @@ export default function DashboardLayout({ title, badge, children }) {
             )}
           </div>
           <div className="flex items-center gap-4">
+            {user?.role === 'admin' && (
+              <Link to="/admin/inventory" className="text-sm font-medium text-ink-900/70 hover:text-tomato-500">
+                Inventory
+              </Link>
+            )}
             {user?.role !== 'admin' && (
               <Link to="/orders" className="text-sm font-medium text-ink-900/70 hover:text-tomato-500">
                 My Orders

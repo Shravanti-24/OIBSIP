@@ -5,7 +5,7 @@ import Button from '../components/Button';
 import Alert from '../components/Alert';
 import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
-import { PaymentStatusBadge, OrderStatusBadge } from '../components/StatusBadge';
+import { PaymentStatusBadge, OrderStatusBadge, FulfillmentStatusBadge } from '../components/StatusBadge';
 import { formatINR } from '../utils/currency';
 import { describeOrderItem } from '../utils/orderItems';
 import { useRazorpayCheckout } from '../hooks/useRazorpayCheckout';
@@ -80,6 +80,7 @@ export default function OrderDetail() {
               <div className="flex flex-wrap items-center gap-2">
                 <PaymentStatusBadge status={order.paymentStatus} />
                 <OrderStatusBadge status={order.orderStatus} />
+                <FulfillmentStatusBadge status={order.fulfillmentStatus} />
               </div>
             </div>
 
@@ -101,7 +102,14 @@ export default function OrderDetail() {
               <span className="text-2xl font-bold text-tomato-500">{formatINR(order.totalAmount)}</span>
             </div>
 
-            {order.paymentStatus === 'paid' && (
+            {order.paymentStatus === 'paid' && order.fulfillmentStatus === 'blocked' && (
+              <Alert type="error">
+                Payment was successful, but one or more items in your order are currently unavailable. Our team
+                will reach out to resolve this.
+              </Alert>
+            )}
+
+            {order.paymentStatus === 'paid' && order.fulfillmentStatus !== 'blocked' && (
               <p className="mt-4 rounded-lg bg-crust-50 px-4 py-3 text-sm text-ink-900/70">
                 Your order has been received and is next in line for the kitchen. Order tracking will be
                 available in a later update.

@@ -9,6 +9,7 @@
     "dev": "nodemon server.js",
     "seed:admin": "node seed/seedAdmin.js",
     "seed:catalogue": "node seed/seedCatalogue.js",
+    "seed:inventory": "node seed/seedInventory.js",
     "test": "vitest run"
   },
   "license": "ISC",

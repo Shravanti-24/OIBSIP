@@ -57,6 +57,20 @@ const orderSchema = new Schema(
     razorpayOrderId: { type: String, default: null },
     razorpayPaymentId: { type: String, default: null },
     razorpaySignature: { type: String, default: null, select: false },
+    // Set exactly once, by the inventory service, after a verified payment
+    // successfully deducts stock. This is the idempotency guard that stops
+    // a duplicate payment-verification request from consuming stock twice.
+    inventoryDeducted: { type: Boolean, default: false },
+    inventoryDeductedAt: { type: Date, default: null },
+    // Distinct from paymentStatus: a payment can be captured by Razorpay
+    // (paid) while fulfillment is blocked because an ingredient ran out of
+    // stock between checkout and verification. 'confirmed' only when
+    // inventory was successfully deducted for this order.
+    fulfillmentStatus: {
+      type: String,
+      enum: ['pending', 'confirmed', 'blocked'],
+      default: 'pending',
+    },
   },
   {
     timestamps: true,
