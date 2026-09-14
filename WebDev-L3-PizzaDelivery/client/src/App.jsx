@@ -9,6 +9,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import AdminLogin from './pages/AdminLogin';
 import Dashboard from './pages/Dashboard';
+import Builder from './pages/Builder';
+import OrderReview from './pages/OrderReview';
 import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
 
@@ -30,6 +32,8 @@ export default function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/customize" element={<Builder />} />
+            <Route path="/order-review" element={<OrderReview />} />
           </Route>
 
           <Route element={<AdminRoute />}>
