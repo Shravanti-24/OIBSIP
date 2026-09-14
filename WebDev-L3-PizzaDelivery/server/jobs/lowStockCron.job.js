@@ -10,6 +10,7 @@ import { checkLowStockAndNotify } from '../services/lowStockAlert.service.js';
 const DEFAULT_SCHEDULE = '* * * * *';
 
 let task = null;
+let isRunning = false;
 
 /**
  * Registers the low-stock checker on a schedule, independent of any user
@@ -30,6 +31,19 @@ export function startLowStockCronJob() {
   }
 
   task = cron.schedule(schedule, async () => {
+    // In-process reentrancy guard: if a previous run is still in flight
+    // (e.g. a slow DB or a slow email provider) when the next tick fires,
+    // skip this tick rather than running two checks concurrently. The next
+    // scheduled tick after this one will simply pick up wherever stock
+    // stands then - nothing is lost, since the checker always evaluates
+    // current state rather than a delta.
+    if (isRunning) {
+      // eslint-disable-next-line no-console
+      console.warn('[low-stock] Previous check still running - skipping this tick.');
+      return;
+    }
+
+    isRunning = true;
     try {
       await checkLowStockAndNotify();
     } catch (error) {
@@ -37,6 +51,8 @@ export function startLowStockCronJob() {
       // log it and let the next scheduled tick retry.
       // eslint-disable-next-line no-console
       console.error('[low-stock] Scheduled check failed:', error.message);
+    } finally {
+      isRunning = false;
     }
   });
 
@@ -50,4 +66,5 @@ export function stopLowStockCronJob() {
     task.stop();
     task = null;
   }
+  isRunning = false;
 }
