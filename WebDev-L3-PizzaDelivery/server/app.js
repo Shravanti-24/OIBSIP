@@ -13,6 +13,7 @@ import builderRoutes from './routes/builder.routes.js';
 import orderRoutes from './routes/order.routes.js';
 import paymentRoutes from './routes/payment.routes.js';
 import inventoryRoutes from './routes/inventory.routes.js';
+import adminOrderRoutes from './routes/adminOrder.routes.js';
 import { notFound, errorHandler } from './middleware/error.middleware.js';
 
 const app = express();
@@ -40,6 +41,7 @@ app.use('/api/builder', builderRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin/inventory', inventoryRoutes);
+app.use('/api/admin/orders', adminOrderRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

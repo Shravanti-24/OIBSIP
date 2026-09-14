@@ -127,6 +127,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     claimed.inventoryDeductedAt = new Date();
     claimed.fulfillmentStatus = 'confirmed';
     claimed.orderStatus = 'Order Received';
+    claimed.statusHistory.push({ status: 'Order Received', changedAt: new Date() });
     await claimed.save();
   } catch (error) {
     // The payment was genuinely captured by Razorpay, so paymentStatus

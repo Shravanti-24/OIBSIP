@@ -15,6 +15,8 @@ import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminInventory from './pages/AdminInventory';
+import AdminOrders from './pages/AdminOrders';
+import AdminOrderDetail from './pages/AdminOrderDetail';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -44,6 +46,8 @@ export default function App() {
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/inventory" element={<AdminInventory />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/orders/:id" element={<AdminOrderDetail />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

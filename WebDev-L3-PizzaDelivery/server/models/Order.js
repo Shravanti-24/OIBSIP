@@ -1,6 +1,18 @@
 import mongoose from 'mongoose';
+import { ORDER_STATUSES } from '../constants/orderStatus.js';
 
 const { Schema } = mongoose;
+
+const statusHistoryEntrySchema = new Schema(
+  {
+    status: { type: String, enum: ORDER_STATUSES, required: true },
+    changedAt: { type: Date, default: Date.now },
+    // Null for the initial "Order Received" entry, which is set by payment
+    // verification rather than an admin action.
+    changedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+  },
+  { _id: false },
+);
 
 // A frozen snapshot of an ingredient at purchase time - never re-derived
 // from the live Ingredient document, since catalogue prices can change
@@ -52,8 +64,13 @@ const orderSchema = new Schema(
     // lifecycle status yet, so it must not read as "Order Received".
     orderStatus: {
       type: String,
-      enum: ['Order Received', 'In Kitchen', 'Sent to Delivery'],
+      enum: ORDER_STATUSES,
     },
+    // Append-only audit trail of fulfillment progress. The initial "Order
+    // Received" entry is written by payment verification; every later entry
+    // is written by the admin status-update service. Never modified beyond
+    // pushing a new entry.
+    statusHistory: { type: [statusHistoryEntrySchema], default: [] },
     razorpayOrderId: { type: String, default: null },
     razorpayPaymentId: { type: String, default: null },
     razorpaySignature: { type: String, default: null, select: false },

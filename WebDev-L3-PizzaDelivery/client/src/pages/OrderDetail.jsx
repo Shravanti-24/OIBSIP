@@ -6,6 +6,7 @@ import Alert from '../components/Alert';
 import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
 import { PaymentStatusBadge, OrderStatusBadge, FulfillmentStatusBadge } from '../components/StatusBadge';
+import OrderStatusProgress from '../components/OrderStatusProgress';
 import { formatINR } from '../utils/currency';
 import { describeOrderItem } from '../utils/orderItems';
 import { useRazorpayCheckout } from '../hooks/useRazorpayCheckout';
@@ -109,11 +110,13 @@ export default function OrderDetail() {
               </Alert>
             )}
 
-            {order.paymentStatus === 'paid' && order.fulfillmentStatus !== 'blocked' && (
-              <p className="mt-4 rounded-lg bg-crust-50 px-4 py-3 text-sm text-ink-900/70">
-                Your order has been received and is next in line for the kitchen. Order tracking will be
-                available in a later update.
-              </p>
+            {order.paymentStatus === 'paid' && order.fulfillmentStatus !== 'blocked' && order.orderStatus && (
+              <div className="mt-6 border-t border-crust-100 pt-6">
+                <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink-900/50">
+                  Order tracking
+                </h2>
+                <OrderStatusProgress status={order.orderStatus} />
+              </div>
             )}
 
             {order.paymentStatus !== 'paid' && (
