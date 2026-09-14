@@ -1,3 +1,5 @@
+import { formatINR } from '../utils/currency';
+
 export default function IngredientOption({ ingredient, selected, onToggle, multi = false }) {
   return (
     <button
@@ -16,7 +18,7 @@ export default function IngredientOption({ ingredient, selected, onToggle, multi
           </span>
         )}
       </span>
-      <span className="text-xs text-ink-900/50">+${Number(ingredient.price).toFixed(2)}</span>
+      <span className="text-xs text-ink-900/50">+{formatINR(ingredient.price)}</span>
     </button>
   );
 }

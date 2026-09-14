@@ -1,10 +1,7 @@
 import mongoose from 'mongoose';
 import Ingredient from '../models/Ingredient.js';
 import { ApiError } from '../utils/ApiError.js';
-
-function round2(amount) {
-  return Math.round(amount * 100) / 100;
-}
+import { round2 } from '../utils/money.js';
 
 function publicIngredient(ingredient) {
   return {

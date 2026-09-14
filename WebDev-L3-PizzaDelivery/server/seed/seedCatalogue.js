@@ -9,35 +9,37 @@ import Pizza from '../models/Pizza.js';
  * creating duplicates.
  */
 
+// All prices are whole Indian Rupees - the application's authoritative
+// currency unit. Razorpay amounts are derived from these via toPaise().
 const BASES = [
-  { name: 'Classic Crust', slug: 'classic-crust', price: 4.0, displayOrder: 1 },
-  { name: 'Thin Crust', slug: 'thin-crust', price: 3.5, displayOrder: 2 },
-  { name: 'Cheese Burst', slug: 'cheese-burst', price: 6.0, displayOrder: 3 },
-  { name: 'Whole Wheat', slug: 'whole-wheat', price: 4.5, displayOrder: 4 },
-  { name: 'Pan Crust', slug: 'pan-crust', price: 4.75, displayOrder: 5 },
+  { name: 'Classic Crust', slug: 'classic-crust', price: 149, displayOrder: 1 },
+  { name: 'Thin Crust', slug: 'thin-crust', price: 129, displayOrder: 2 },
+  { name: 'Cheese Burst', slug: 'cheese-burst', price: 199, displayOrder: 3 },
+  { name: 'Whole Wheat', slug: 'whole-wheat', price: 159, displayOrder: 4 },
+  { name: 'Pan Crust', slug: 'pan-crust', price: 169, displayOrder: 5 },
 ];
 
 const SAUCES = [
-  { name: 'Classic Tomato', slug: 'classic-tomato', price: 0.5, displayOrder: 1 },
-  { name: 'Spicy Arrabbiata', slug: 'spicy-arrabbiata', price: 0.75, displayOrder: 2 },
-  { name: 'Garlic Herb', slug: 'garlic-herb', price: 0.75, displayOrder: 3 },
-  { name: 'Pesto', slug: 'pesto', price: 1.25, displayOrder: 4 },
-  { name: 'BBQ', slug: 'bbq', price: 1.0, displayOrder: 5 },
+  { name: 'Classic Tomato', slug: 'classic-tomato', price: 20, displayOrder: 1 },
+  { name: 'Spicy Arrabbiata', slug: 'spicy-arrabbiata', price: 25, displayOrder: 2 },
+  { name: 'Garlic Herb', slug: 'garlic-herb', price: 25, displayOrder: 3 },
+  { name: 'Pesto', slug: 'pesto', price: 40, displayOrder: 4 },
+  { name: 'BBQ', slug: 'bbq', price: 35, displayOrder: 5 },
 ];
 
 const CHEESES = [
-  { name: 'Mozzarella', slug: 'mozzarella', price: 1.5, displayOrder: 1 },
-  { name: 'Cheddar', slug: 'cheddar', price: 1.75, displayOrder: 2 },
-  { name: 'Parmesan', slug: 'parmesan', price: 2.25, displayOrder: 3 },
+  { name: 'Mozzarella', slug: 'mozzarella', price: 50, displayOrder: 1 },
+  { name: 'Cheddar', slug: 'cheddar', price: 60, displayOrder: 2 },
+  { name: 'Parmesan', slug: 'parmesan', price: 75, displayOrder: 3 },
 ];
 
 const VEGETABLES = [
-  { name: 'Onion', slug: 'onion', price: 0.5, displayOrder: 1 },
-  { name: 'Capsicum', slug: 'capsicum', price: 0.5, displayOrder: 2 },
-  { name: 'Tomato', slug: 'tomato', price: 0.5, displayOrder: 3 },
-  { name: 'Jalapeno', slug: 'jalapeno', price: 0.75, displayOrder: 4 },
-  { name: 'Mushroom', slug: 'mushroom', price: 0.85, displayOrder: 5 },
-  { name: 'Sweet Corn', slug: 'sweet-corn', price: 0.6, displayOrder: 6 },
+  { name: 'Onion', slug: 'onion', price: 15, displayOrder: 1 },
+  { name: 'Capsicum', slug: 'capsicum', price: 15, displayOrder: 2 },
+  { name: 'Tomato', slug: 'tomato', price: 15, displayOrder: 3 },
+  { name: 'Jalapeno', slug: 'jalapeno', price: 20, displayOrder: 4 },
+  { name: 'Mushroom', slug: 'mushroom', price: 25, displayOrder: 5 },
+  { name: 'Sweet Corn', slug: 'sweet-corn', price: 20, displayOrder: 6 },
 ];
 
 const INGREDIENTS = [
@@ -65,7 +67,7 @@ const PIZZAS = [
     sauce: 'classic-tomato',
     cheese: 'mozzarella',
     vegetables: ['tomato'],
-    price: 8.99,
+    price: 249,
     displayOrder: 1,
   },
   {
@@ -76,7 +78,7 @@ const PIZZAS = [
     sauce: 'classic-tomato',
     cheese: 'cheddar',
     vegetables: ['onion', 'capsicum', 'mushroom', 'sweet-corn'],
-    price: 11.99,
+    price: 349,
     displayOrder: 2,
   },
   {
@@ -87,7 +89,7 @@ const PIZZAS = [
     sauce: 'spicy-arrabbiata',
     cheese: 'mozzarella',
     vegetables: ['onion', 'capsicum', 'jalapeno'],
-    price: 10.49,
+    price: 299,
     displayOrder: 3,
   },
   {
@@ -98,7 +100,7 @@ const PIZZAS = [
     sauce: 'bbq',
     cheese: 'cheddar',
     vegetables: ['onion', 'capsicum', 'sweet-corn'],
-    price: 11.49,
+    price: 329,
     displayOrder: 4,
   },
   {
@@ -109,7 +111,7 @@ const PIZZAS = [
     sauce: 'pesto',
     cheese: 'parmesan',
     vegetables: ['tomato', 'mushroom', 'onion'],
-    price: 12.49,
+    price: 379,
     displayOrder: 5,
   },
   {
@@ -120,7 +122,7 @@ const PIZZAS = [
     sauce: 'classic-tomato',
     cheese: 'parmesan',
     vegetables: [],
-    price: 13.49,
+    price: 399,
     displayOrder: 6,
   },
 ];

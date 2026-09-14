@@ -11,6 +11,8 @@ import AdminLogin from './pages/AdminLogin';
 import Dashboard from './pages/Dashboard';
 import Builder from './pages/Builder';
 import OrderReview from './pages/OrderReview';
+import Orders from './pages/Orders';
+import OrderDetail from './pages/OrderDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
 
@@ -34,6 +36,8 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/customize" element={<Builder />} />
             <Route path="/order-review" element={<OrderReview />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/:id" element={<OrderDetail />} />
           </Route>
 
           <Route element={<AdminRoute />}>

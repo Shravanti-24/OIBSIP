@@ -1,8 +1,5 @@
 import { useState } from 'react';
-
-function formatPrice(amount) {
-  return `$${Number(amount).toFixed(2)}`;
-}
+import { formatINR } from '../utils/currency';
 
 export default function PizzaCard({ pizza, onSelect }) {
   const [imgFailed, setImgFailed] = useState(false);
@@ -30,7 +27,7 @@ export default function PizzaCard({ pizza, onSelect }) {
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-lg font-semibold text-ink-900">{pizza.name}</h3>
-          <span className="whitespace-nowrap text-lg font-semibold text-tomato-500">{formatPrice(pizza.price)}</span>
+          <span className="whitespace-nowrap text-lg font-semibold text-tomato-500">{formatINR(pizza.price)}</span>
         </div>
         {pizza.description && <p className="line-clamp-2 text-sm text-ink-900/70">{pizza.description}</p>}
         {tags.length > 0 && (

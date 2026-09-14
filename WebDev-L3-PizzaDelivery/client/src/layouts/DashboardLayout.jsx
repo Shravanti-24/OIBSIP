@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Button from '../components/Button';
 
@@ -17,6 +18,11 @@ export default function DashboardLayout({ title, badge, children }) {
             )}
           </div>
           <div className="flex items-center gap-4">
+            {user?.role !== 'admin' && (
+              <Link to="/orders" className="text-sm font-medium text-ink-900/70 hover:text-tomato-500">
+                My Orders
+              </Link>
+            )}
             <span className="text-sm text-ink-900/70">{user?.name}</span>
             <Button variant="ghost" className="w-auto px-3 py-1.5 text-sm" onClick={logout}>
               Log out

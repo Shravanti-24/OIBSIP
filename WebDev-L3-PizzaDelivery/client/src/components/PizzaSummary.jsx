@@ -1,8 +1,5 @@
 import Button from './Button';
-
-function formatPrice(amount) {
-  return `$${Number(amount).toFixed(2)}`;
-}
+import { formatINR } from '../utils/currency';
 
 function Row({ label, value }) {
   return (
@@ -31,7 +28,7 @@ export default function PizzaSummary({ base, sauce, cheese, vegetables, price, o
         </dl>
         <div className="mt-5 flex items-center justify-between border-t border-crust-100 pt-4">
           <span className="text-sm text-ink-900/60">Total</span>
-          <span className="text-xl font-bold text-tomato-500">{formatPrice(price)}</span>
+          <span className="text-xl font-bold text-tomato-500">{formatINR(price)}</span>
         </div>
         <Button className="mt-5" onClick={onContinue} disabled={!canContinue} isLoading={isSubmitting}>
           Continue

@@ -22,6 +22,8 @@ export const env = {
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
   resendApiKey: process.env.RESEND_API_KEY || '',
   emailFrom: process.env.EMAIL_FROM || 'Pizza Delivery <onboarding@resend.dev>',
+  razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
+  razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
   adminName: process.env.ADMIN_NAME || '',
   adminEmail: process.env.ADMIN_EMAIL || '',
   adminPassword: process.env.ADMIN_PASSWORD || '',
