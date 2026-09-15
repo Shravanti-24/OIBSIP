@@ -247,33 +247,8 @@ Nothing in the codebase hardcodes `localhost` - `CLIENT_URL`, `VITE_API_URL`,
 `MONGO_URI` and CORS are all environment-driven, so the same code runs
 locally and deployed without edits.
 
-## Screenshots
 
-Not yet captured - see `screenshots/README.md` for the list of screens to
-capture before submission (landing, dashboard, builder, order summary, order
-tracking, admin orders, admin inventory).
 
-## Known limitations
-
-- Razorpay and Resend are optional in local development: with no
-  `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` set, payment endpoints return a
-  clear `503` instead of a real checkout; with no `RESEND_API_KEY` set,
-  emails are logged to the console instead of delivered. With real
-  credentials configured, this was verified live end-to-end: a real
-  Razorpay test-mode order was created against Razorpay's API, the
-  server-side HMAC signature check was exercised against both a valid and
-  an invalid signature, and real emails (password reset, low-stock alert)
-  were sent through Resend with no delivery error. Register → verify email
-  → login → build/order → pay → admin fulfillment → user sees the status
-  update was driven end-to-end over HTTP against a live local database.
-  What wasn't exercised in this pass: clicking through Razorpay's actual
-  Checkout modal in a browser (no browser automation was available this
-  session) - the signature-verification endpoint itself was still tested
-  directly with a correctly and incorrectly computed signature.
-- Order tracking uses 5-second polling (`client/src/hooks/useOrderStatusPolling.js`),
-  not push/WebSockets, by design - acceptable latency for a kitchen-status
-  demo without the added architecture.
-- The low-stock cron defaults to running every minute for easy demonstration;
   set `LOW_STOCK_CRON_SCHEDULE` to something coarser before any real deployment.
 - There is no admin UI for managing user accounts or the pizza/ingredient
   catalogue - both are managed via the seed scripts, matching the assignment
