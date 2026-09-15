@@ -7,9 +7,15 @@ import Inventory from '../models/Inventory.js';
  * `npm run seed:catalogue` (every inventory record is anchored to an
  * existing ingredient by its stable slug).
  *
- * Upserts by ingredient reference using $setOnInsert, so re-running this
- * script never creates a duplicate inventory record and never resets stock
- * an admin has already changed through the dashboard.
+ * Default mode only creates missing records, so re-running this script
+ * never creates a duplicate inventory record and never resets stock an
+ * admin has already changed through the dashboard.
+ *
+ * Pass `--reset` (or run `npm run seed:inventory:reset`) to additionally
+ * restore every existing record's quantity/threshold to its DEMO_STOCK
+ * value and clear any low-stock alert flag - intended for local/demo use
+ * only (e.g. before a presentation), never for production, since it
+ * overwrites real admin-entered stock levels.
  */
 
 const DEMO_STOCK = {
@@ -40,7 +46,7 @@ const DEMO_STOCK = {
 const DEFAULT_STOCK = { quantity: 30, threshold: 10 };
 const UNIT = 'portion';
 
-async function seedInventory() {
+async function seedInventory({ reset = false } = {}) {
   await connectDB();
 
   const ingredients = await Ingredient.find({});
@@ -52,17 +58,29 @@ async function seedInventory() {
 
   let created = 0;
   let alreadyExisted = 0;
+  let reset_ = 0;
 
   for (const ingredient of ingredients) {
+    const demo = DEMO_STOCK[ingredient.slug] || DEFAULT_STOCK;
     // eslint-disable-next-line no-await-in-loop
-    const exists = await Inventory.exists({ ingredient: ingredient._id });
-    if (exists) {
+    const existing = await Inventory.findOne({ ingredient: ingredient._id });
+
+    if (existing) {
       alreadyExisted += 1;
+      if (reset) {
+        existing.quantity = demo.quantity;
+        existing.threshold = demo.threshold;
+        existing.isActive = true;
+        existing.lowStockAlertSent = false;
+        existing.lowStockAlertSentAt = null;
+        // eslint-disable-next-line no-await-in-loop
+        await existing.save();
+        reset_ += 1;
+      }
       // eslint-disable-next-line no-continue
       continue;
     }
 
-    const demo = DEMO_STOCK[ingredient.slug] || DEFAULT_STOCK;
     try {
       // eslint-disable-next-line no-await-in-loop
       await Inventory.create({
@@ -85,11 +103,16 @@ async function seedInventory() {
     }
   }
 
-  console.log(`[seed:inventory] Created ${created} inventory record(s), ${alreadyExisted} already existed.`);
+  console.log(
+    `[seed:inventory] Created ${created} inventory record(s), ${alreadyExisted} already existed` +
+      (reset ? `, ${reset_} reset to full demo stock.` : '.'),
+  );
   await disconnectDB();
 }
 
-seedInventory().catch((error) => {
+const reset = process.argv.includes('--reset');
+
+seedInventory({ reset }).catch((error) => {
   console.error('[seed:inventory] Failed:', error);
   process.exitCode = 1;
 });

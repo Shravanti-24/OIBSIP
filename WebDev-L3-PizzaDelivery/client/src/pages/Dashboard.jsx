@@ -59,9 +59,12 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout title={`Welcome, ${user?.name?.split(' ')[0] || 'there'}!`}>
-      <div className="mb-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-crust-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center">
+      <div className="mb-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-blush-100 bg-gradient-to-br from-blush-100/70 to-crust-100/50 p-6 sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-lg font-semibold text-ink-900">Craving something specific?</h2>
+          <span className="rounded-full bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-tomato-600">
+            Custom builder
+          </span>
+          <h2 className="mt-2 text-lg font-semibold text-ink-900">Craving something specific?</h2>
           <p className="mt-1 text-sm text-ink-900/60">
             Build your own pizza from scratch - pick your base, sauce, cheese and toppings.
           </p>

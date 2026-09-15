@@ -35,11 +35,11 @@ export async function sendEmail({ to, subject, html }) {
 
 export function verificationEmailTemplate({ name, verifyUrl }) {
   return {
-    subject: 'Verify your email - Pizza Delivery',
+    subject: 'Verify your email - Pizza House',
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <h2>Hi ${escapeHtml(name)},</h2>
-        <p>Thanks for signing up for Pizza Delivery. Please verify your email address to activate your account.</p>
+        <p>Thanks for signing up for Pizza House. Please verify your email address to activate your account.</p>
         <p>
           <a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#e0442b;color:#fff;text-decoration:none;border-radius:6px;">
             Verify Email
@@ -53,11 +53,11 @@ export function verificationEmailTemplate({ name, verifyUrl }) {
 
 export function passwordResetEmailTemplate({ name, resetUrl }) {
   return {
-    subject: 'Reset your password - Pizza Delivery',
+    subject: 'Reset your password - Pizza House',
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <h2>Hi ${escapeHtml(name)},</h2>
-        <p>We received a request to reset your Pizza Delivery password.</p>
+        <p>We received a request to reset your Pizza House password.</p>
         <p>
           <a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background:#e0442b;color:#fff;text-decoration:none;border-radius:6px;">
             Reset Password
@@ -92,10 +92,10 @@ export function lowStockAlertEmailTemplate({ items }) {
     .join('');
 
   return {
-    subject: 'Pizza Delivery — Low Stock Alert',
+    subject: 'Pizza House — Low Stock Alert',
     html: `
       <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
-        <h2>Pizza Delivery Inventory Alert</h2>
+        <h2>Pizza House Inventory Alert</h2>
         <p>The following inventory items are below their configured stock thresholds:</p>
         <table style="width:100%;border-collapse:collapse;font-size:14px;">
           <thead>

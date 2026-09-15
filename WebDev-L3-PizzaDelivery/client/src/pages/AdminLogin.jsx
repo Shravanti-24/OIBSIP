@@ -49,7 +49,7 @@ export default function AdminLogin() {
   return (
     <AuthLayout
       title="Admin login"
-      subtitle="Restricted access for Pizza Delivery staff"
+      subtitle="Restricted access for Pizza House staff"
       footer={
         <Link to="/login" className="text-ink-900/50 hover:underline">
           Back to customer login

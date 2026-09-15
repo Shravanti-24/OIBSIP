@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Pizza Delivery platform API server",
+  "description": "Pizza House platform API server",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -10,6 +10,9 @@
     "seed:admin": "node seed/seedAdmin.js",
     "seed:catalogue": "node seed/seedCatalogue.js",
     "seed:inventory": "node seed/seedInventory.js",
+    "seed:inventory:reset": "node seed/seedInventory.js --reset",
+    "seed:reset:orders": "node seed/resetOrders.js",
+    "seed:reset:users": "node seed/resetUsers.js",
     "test": "vitest run"
   },
   "license": "ISC",

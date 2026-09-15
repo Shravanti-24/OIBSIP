@@ -1,4 +1,4 @@
-# Pizza Delivery - Full-Stack Application
+# Pizza House - Full-Stack Application
 
 Oasis Infobyte Web Development & Designing Internship - Level 3, Task 1.
 
@@ -47,7 +47,8 @@ WebDev-L3-PizzaDelivery/
 │   │                        inventory, adminOrder, lowStockAlert
 │   ├── jobs/                 lowStockCron.job.js
 │   ├── utils/                ApiError, JWT, secure tokens, cookies, money (INR/paise)
-│   ├── seed/                  seedAdmin.js, seedCatalogue.js, seedInventory.js
+│   ├── seed/                  seedAdmin.js, seedCatalogue.js, seedInventory.js,
+│   │                        resetOrders.js (local/demo-only reset utilities)
 │   ├── tests/                 Vitest unit/integration tests
 │   ├── app.js / server.js
 │   └── package.json
@@ -76,13 +77,35 @@ cp .env.example .env   # fill in MONGO_URI, JWT_SECRET, RAZORPAY_*, RESEND_API_K
 npm run dev            # starts the API on http://localhost:5000
 ```
 
-Seed the database (all three scripts are idempotent - safe to re-run):
+Seed the database (all scripts are idempotent - safe to re-run):
 
 ```bash
 npm run seed:admin        # creates the admin account from ADMIN_* env vars
 npm run seed:catalogue    # 5 bases, 5 sauces, 3 cheeses, 6 vegetables + 6 ready-made pizzas
 npm run seed:inventory    # one stock record per ingredient, with demo quantities/thresholds
 ```
+
+### Resetting to a clean demo state
+
+Two extra local-only scripts reset the database to a deterministic, fully-stocked
+state before a demo or evaluation - see `server/seed/seedInventory.js` and
+`server/seed/resetOrders.js` for exactly what each one touches:
+
+```bash
+npm run seed:inventory:reset   # restores every ingredient to its full DEMO_STOCK quantity/threshold
+                                # and clears any low-stock alert flag - safe to re-run, never duplicates
+npm run seed:reset:orders      # deletes every Order document (only the Order collection - users,
+                                # the catalogue, and inventory are never touched)
+npm run seed:reset:users       # deletes every non-admin User document (and any orders they placed) -
+                                # never touches an account with role: 'admin'
+```
+
+Recommended before a demo: run `seed:reset:orders`, `seed:reset:users`, then
+`seed:inventory:reset`, so the app starts with zero personal/test accounts, an empty
+order history, and fully-stocked inventory, and the evaluator registers and orders as
+a brand-new user rather than looking at old test data. None of these scripts run
+automatically or are reachable from any API route - all are manual, local/demo-only
+steps and must never be pointed at a production database.
 
 Run the test suite:
 
@@ -196,3 +219,62 @@ configuration is needed in development.
 
 See `server/.env.example` and `client/.env.example` for the full list with
 descriptions. No secrets are committed to this repository.
+
+## Deployment
+
+The app is a standard two-service deployment - it has not been deployed anywhere
+by this repository, but the code is ready for it:
+
+- **Frontend** (`client/`) - any static host that can serve a Vite build
+  (Vercel, Netlify, ...). Build with `npm run build`, publish the `dist/` folder.
+  Set `VITE_API_URL` to the deployed backend's `/api` URL at build time.
+- **Backend** (`server/`) - any Node host that runs `npm start`
+  (Render, Railway, ...). Set every variable in `server/.env.example`, in
+  particular `CLIENT_URL` to the deployed frontend's origin (used for CORS and
+  for the links inside verification/reset emails) and `NODE_ENV=production`
+  (this also switches the auth cookie to `secure` + `SameSite=None`, required
+  for a cross-origin frontend/backend pair to keep the login session).
+- **Database** - MongoDB Atlas (or any reachable MongoDB instance). Point
+  `MONGO_URI` at it and run the seed scripts once against it.
+- **Payments** - Razorpay test-mode keys work unchanged in a deployed
+  environment; no code change is needed to go from local to deployed test-mode
+  checkout.
+- **Email** - Resend needs a verified sending domain/address in `EMAIL_FROM`
+  for production sends; in development, an unset `RESEND_API_KEY` just logs
+  the email content to the console instead of failing.
+
+Nothing in the codebase hardcodes `localhost` - `CLIENT_URL`, `VITE_API_URL`,
+`MONGO_URI` and CORS are all environment-driven, so the same code runs
+locally and deployed without edits.
+
+## Screenshots
+
+Not yet captured - see `screenshots/README.md` for the list of screens to
+capture before submission (landing, dashboard, builder, order summary, order
+tracking, admin orders, admin inventory).
+
+## Known limitations
+
+- Razorpay and Resend are optional in local development: with no
+  `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` set, payment endpoints return a
+  clear `503` instead of a real checkout; with no `RESEND_API_KEY` set,
+  emails are logged to the console instead of delivered. With real
+  credentials configured, this was verified live end-to-end: a real
+  Razorpay test-mode order was created against Razorpay's API, the
+  server-side HMAC signature check was exercised against both a valid and
+  an invalid signature, and real emails (password reset, low-stock alert)
+  were sent through Resend with no delivery error. Register → verify email
+  → login → build/order → pay → admin fulfillment → user sees the status
+  update was driven end-to-end over HTTP against a live local database.
+  What wasn't exercised in this pass: clicking through Razorpay's actual
+  Checkout modal in a browser (no browser automation was available this
+  session) - the signature-verification endpoint itself was still tested
+  directly with a correctly and incorrectly computed signature.
+- Order tracking uses 5-second polling (`client/src/hooks/useOrderStatusPolling.js`),
+  not push/WebSockets, by design - acceptable latency for a kitchen-status
+  demo without the added architecture.
+- The low-stock cron defaults to running every minute for easy demonstration;
+  set `LOW_STOCK_CRON_SCHEDULE` to something coarser before any real deployment.
+- There is no admin UI for managing user accounts or the pizza/ingredient
+  catalogue - both are managed via the seed scripts, matching the assignment
+  scope (inventory + order management are the required admin surfaces).

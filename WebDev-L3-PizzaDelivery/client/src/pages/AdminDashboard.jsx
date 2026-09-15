@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { useAuth } from '../hooks/useAuth';
 import * as adminOrderService from '../services/adminOrder.service';
+import * as inventoryService from '../services/inventory.service';
 
 function SummaryCard({ label, value, tone }) {
   const toneStyles = {
@@ -10,6 +11,8 @@ function SummaryCard({ label, value, tone }) {
     received: 'text-basil-600',
     kitchen: 'text-amber-600',
     delivery: 'text-tomato-600',
+    warning: 'text-amber-600',
+    danger: 'text-red-600',
   };
   return (
     <div className="rounded-2xl border border-crust-100 bg-white p-5 shadow-sm">
@@ -22,12 +25,18 @@ function SummaryCard({ label, value, tone }) {
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [summary, setSummary] = useState(null);
+  const [inventorySummary, setInventorySummary] = useState(null);
 
   useEffect(() => {
     adminOrderService
       .fetchAdminOrders({ limit: 1 })
       .then((res) => setSummary(res.data.data.summary))
       .catch(() => setSummary(null));
+
+    inventoryService
+      .fetchInventory()
+      .then((res) => setInventorySummary(res.data.data.summary))
+      .catch(() => setInventorySummary(null));
   }, []);
 
   return (
@@ -39,11 +48,23 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <SummaryCard label="Total orders" value={summary?.total} tone="default" />
-          <SummaryCard label="Order Received" value={summary?.orderReceived} tone="received" />
-          <SummaryCard label="In Kitchen" value={summary?.inKitchen} tone="kitchen" />
-          <SummaryCard label="Sent to Delivery" value={summary?.sentToDelivery} tone="delivery" />
+        <div>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-900/50">Orders</h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <SummaryCard label="Total orders" value={summary?.total} tone="default" />
+            <SummaryCard label="Order Received" value={summary?.orderReceived} tone="received" />
+            <SummaryCard label="In Kitchen" value={summary?.inKitchen} tone="kitchen" />
+            <SummaryCard label="Sent to Delivery" value={summary?.sentToDelivery} tone="delivery" />
+          </div>
+        </div>
+
+        <div>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-900/50">Inventory</h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <SummaryCard label="Tracked ingredients" value={inventorySummary?.total} tone="default" />
+            <SummaryCard label="Low stock" value={inventorySummary?.lowStock} tone="warning" />
+            <SummaryCard label="Out of stock" value={inventorySummary?.outOfStock} tone="danger" />
+          </div>
         </div>
 
         <div className="rounded-2xl border border-crust-100 bg-white p-4 shadow-sm">
@@ -77,10 +98,6 @@ export default function AdminDashboard() {
             </span>
           </Link>
         </div>
-
-        <p className="text-sm text-ink-900/50">
-          Live status polling and low-stock email alerts will be built in a later phase of this project.
-        </p>
       </div>
     </DashboardLayout>
   );

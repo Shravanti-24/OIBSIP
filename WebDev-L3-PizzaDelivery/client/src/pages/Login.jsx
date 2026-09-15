@@ -51,7 +51,7 @@ export default function Login() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Log in to your Pizza Delivery account"
+      subtitle="Log in to your Pizza House account"
       footer={
         <>
           Don&apos;t have an account?{' '}

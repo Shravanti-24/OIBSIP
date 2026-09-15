@@ -12,7 +12,7 @@ import { signAuthToken } from '../utils/jwt.js';
 import { setAuthCookie, clearAuthCookie } from '../utils/cookies.js';
 import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { env } from '../config/env.js';
+import { env, isProduction } from '../config/env.js';
 
 function publicUser(user) {
   return {
@@ -28,6 +28,16 @@ function publicUser(user) {
 async function dispatchVerificationEmail(user) {
   const rawToken = await issueEmailVerificationToken(user);
   const verifyUrl = `${env.clientUrl}/verify-email?token=${rawToken}`;
+
+  if (!isProduction) {
+    // Local development troubleshooting aid only: never returned in any API
+    // response, never sent anywhere - just printed to this process's own
+    // console so a developer can click/copy the real link without needing
+    // real Resend delivery. The Resend attempt below is unchanged.
+    // eslint-disable-next-line no-console
+    console.log(`[Pizza House] Email verification link:\n${verifyUrl}`);
+  }
+
   const { subject, html } = verificationEmailTemplate({ name: user.name, verifyUrl });
   try {
     await sendEmail({ to: user.email, subject, html });

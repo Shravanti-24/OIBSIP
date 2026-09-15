@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 
-dotenv.config();
+// `quiet: true` suppresses dotenv's promotional startup "tip" banner (and
+// its external URLs) so server/seed script output stays clean for a demo.
+dotenv.config({ quiet: true });
 
 const required = ['JWT_SECRET', 'MONGO_URI'];
 
@@ -21,7 +23,7 @@ export const env = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
   resendApiKey: process.env.RESEND_API_KEY || '',
-  emailFrom: process.env.EMAIL_FROM || 'Pizza Delivery <onboarding@resend.dev>',
+  emailFrom: process.env.EMAIL_FROM || 'Pizza House <onboarding@resend.dev>',
   razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
   adminName: process.env.ADMIN_NAME || '',

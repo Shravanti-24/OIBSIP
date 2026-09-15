@@ -42,11 +42,11 @@ export function useRazorpayCheckout() {
           key: keyId,
           amount,
           currency,
-          name: 'Pizza Delivery',
+          name: 'Pizza House',
           description: 'Pizza order payment',
           order_id: razorpayOrderId,
           prefill: { name: user?.name, email: user?.email },
-          theme: { color: '#e0442b' },
+          theme: { color: '#74395f' },
           handler: async (response) => {
             try {
               const verifyRes = await paymentService.verifyPayment({

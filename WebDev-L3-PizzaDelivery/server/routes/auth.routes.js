@@ -16,6 +16,7 @@ import {
   registerValidators,
   loginValidators,
   emailOnlyValidators,
+  forgotPasswordValidators,
   verifyEmailValidators,
   resetPasswordValidators,
 } from '../middleware/authValidators.js';
@@ -27,7 +28,7 @@ router.get('/verify-email', authLimiter, verifyEmailValidators, validate, verify
 router.post('/resend-verification', authLimiter, emailOnlyValidators, validate, resendVerification);
 router.post('/login', strictAuthLimiter, loginValidators, validate, login);
 router.post('/logout', logout);
-router.post('/forgot-password', strictAuthLimiter, emailOnlyValidators, validate, forgotPassword);
+router.post('/forgot-password', strictAuthLimiter, forgotPasswordValidators, validate, forgotPassword);
 router.post('/reset-password', strictAuthLimiter, resetPasswordValidators, validate, resetPassword);
 router.get('/me', requireAuth, me);
 

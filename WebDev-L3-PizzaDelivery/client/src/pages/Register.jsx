@@ -72,7 +72,7 @@ export default function Register() {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Join Pizza Delivery to order your favorite pizzas"
+      subtitle="Join Pizza House to order your favorite pizzas"
       footer={
         <>
           Already have an account?{' '}

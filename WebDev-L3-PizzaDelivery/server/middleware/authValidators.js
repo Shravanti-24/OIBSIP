@@ -25,6 +25,15 @@ export const emailOnlyValidators = [
   body('email').trim().isEmail().withMessage('A valid email is required'),
 ];
 
+// Registration normalizes email with .normalizeEmail() (e.g. Gmail dots/+subaddress
+// stripping), so the stored, canonical address may differ from what a user later
+// types by hand. Forgot-password must normalize the same way before looking the
+// account up, or a legitimately registered user's own email can silently fail to
+// match - which looks identical to "no account exists" and no email ever sends.
+export const forgotPasswordValidators = [
+  body('email').trim().isEmail().withMessage('A valid email is required').normalizeEmail(),
+];
+
 export const verifyEmailValidators = [
   query('token').notEmpty().withMessage('Verification token is required'),
 ];

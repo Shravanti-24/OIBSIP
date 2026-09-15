@@ -1,15 +1,36 @@
 @import "tailwindcss";
 
+/*
+ * Brand palette: deep muted plum (primary), warm peach + blush pink
+ * (accents), light plum (surfaces/background). Token names are kept stable
+ * (crust/tomato/basil/ink) since they're used across ~40 components -
+ * only the hues moved, from the old crust/gold+tomato-red scheme to this
+ * plum/peach/blush system. crust-50 was recolored from a warm cream to a
+ * soft light plum (same hue family as tomato-500) for global backgrounds.
+ */
 @theme {
-  --color-crust-50: #fdf8f0;
-  --color-crust-100: #f8ecd8;
-  --color-crust-500: #d9a441;
-  --color-crust-600: #b9822a;
-  --color-tomato-500: #e0442b;
-  --color-tomato-600: #c22f1a;
-  --color-basil-500: #3f7d4f;
-  --color-basil-600: #2f5f3c;
-  --color-ink-900: #241a12;
+  /* crust: light plum surfaces/background + peach accent */
+  --color-crust-50: #f3e2ec;
+  --color-crust-100: #f6e3d0;
+  --color-crust-500: #e2a06c;
+  --color-crust-600: #c98550;
+
+  /* tomato: primary brand colour - deep muted plum */
+  --color-tomato-500: #74395f;
+  --color-tomato-600: #5c2c4b;
+
+  /* basil: success semantic (kept green, warmed slightly to sit with the palette) */
+  --color-basil-500: #4c8c68;
+  --color-basil-600: #3a6e52;
+
+  /* blush: supporting pink accent for highlights, tags, secondary emphasis */
+  --color-blush-100: #f6dee6;
+  --color-blush-500: #d9799c;
+  --color-blush-600: #bd5d80;
+
+  /* ink: dark plum/charcoal text */
+  --color-ink-900: #2b1e28;
+
   --font-display: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -26,4 +47,9 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+::selection {
+  background-color: var(--color-tomato-500);
+  color: white;
 }
