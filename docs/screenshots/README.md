@@ -1,14 +1,20 @@
 # Screenshots
 
-Add demo screenshots/GIFs here before submission, e.g.:
+| File                      | Screen                                                   |
+| ------------------------- | -------------------------------------------------------- |
+| `01-landing.png`          | Landing page (signed out)                                |
+| `02-dashboard.png`        | Pizza menu after sign-in                                 |
+| `03-builder.png`          | Custom pizza builder, mid-build, with live pricing       |
+| `04-order-review.png`     | Order summary before payment                             |
+| `05-order-tracking.png`   | Customer order tracking, mid-lifecycle                   |
+| `06-admin-orders.png`     | Admin order queue with per-status counts                 |
+| `07-admin-inventory.png`  | Admin inventory with low/out-of-stock states             |
 
-- `01-landing.png` - landing page
-- `02-dashboard.png` - user dashboard / pizza catalogue
-- `03-builder.png` - custom pizza builder
-- `04-order-summary.png` - order summary before payment
-- `05-order-tracking.png` - live order tracking
-- `06-admin-orders.png` - admin order management
-- `07-admin-inventory.png` - admin inventory dashboard
+All are captures of the real web client (Vite dev server, Chromium at 1360×900,
+2× device scale). The API responses behind them are fixtures matching the shapes
+the Express API returns, populated with this repository's own seed data
+(`server/seed/`), because the machine they were captured on had no MongoDB
+available. Pizza artwork is generated locally for the same reason — the seeded
+catalogue points at Unsplash URLs that were unreachable there.
 
-None are committed yet - this file is a placeholder so the folder is
-tracked by Git. Reference the files you add from the main `README.md`.
+The UI, routing, styling, state and formatting are the application's own.

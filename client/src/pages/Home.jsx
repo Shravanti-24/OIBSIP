@@ -95,7 +95,7 @@ export default function Home() {
       </main>
 
       <footer className="relative mx-auto w-full max-w-5xl px-4 pb-6 text-center text-xs text-ink-900/50">
-        Oasis Infobyte Web Development &amp; Designing Internship - Level 3, Task 1
+        Pizza House &middot; Built with React, Express and MongoDB &middot; Payments by Razorpay
       </footer>
     </div>
   );
