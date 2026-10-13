@@ -7,7 +7,7 @@ low.
 
 [![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](.nvmrc)
+[![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](.nvmrc)
 
 ![The Pizza House landing page](docs/screenshots/01-landing.png)
 
@@ -102,7 +102,7 @@ The app is then on <http://localhost:8080>.
 
 ### Without Docker
 
-Requires Node 20+ and a MongoDB connection string (local `mongod` or Atlas).
+Requires Node 22+ and a MongoDB connection string (local `mongod` or Atlas).
 
 ```bash
 npm install                          # installs both workspaces
@@ -162,7 +162,7 @@ The API suite covers the pricing authority, payment-verification idempotency,
 inventory deduction and rollback, the status state machine, auth middleware,
 token hashing and the money conversions. The client suite covers the route
 guards, the polling hook's lifecycle, and the formatting and validation helpers.
-CI runs both on Node 20 and 22, along with lint, format check and a production
+CI runs both on Node 22 and 24, along with lint, format check and a production
 build.
 
 ## Project structure
