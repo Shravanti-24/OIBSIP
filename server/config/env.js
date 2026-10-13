@@ -1,0 +1,38 @@
+import dotenv from 'dotenv';
+
+// `quiet: true` suppresses dotenv's promotional startup "tip" banner (and
+// its external URLs) so server/seed script output stays clean for a demo.
+dotenv.config({ quiet: true });
+
+const required = ['JWT_SECRET', 'MONGO_URI'];
+
+if (process.env.NODE_ENV !== 'test') {
+  for (const key of required) {
+    if (!process.env[key]) {
+      // eslint-disable-next-line no-console
+      console.warn(`[config] Missing environment variable: ${key}. See .env.example.`);
+    }
+  }
+}
+
+export const env = {
+  nodeEnv: process.env.NODE_ENV || 'development',
+  port: Number(process.env.PORT) || 5000,
+  mongoUri: process.env.MONGO_URI || '',
+  jwtSecret: process.env.JWT_SECRET || 'dev-insecure-secret-change-me',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  resendApiKey: process.env.RESEND_API_KEY || '',
+  emailFrom: process.env.EMAIL_FROM || 'Pizza House <onboarding@resend.dev>',
+  razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
+  razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
+  adminName: process.env.ADMIN_NAME || '',
+  adminEmail: process.env.ADMIN_EMAIL || '',
+  adminPassword: process.env.ADMIN_PASSWORD || '',
+  // Cron expression for the low-stock check (jobs/lowStockCron.job.js).
+  // Unset uses the module's own demo-friendly default (every minute).
+  lowStockCronSchedule: process.env.LOW_STOCK_CRON_SCHEDULE || '',
+};
+
+export const isProduction = env.nodeEnv === 'production';
+export const isDevelopment = env.nodeEnv === 'development';
