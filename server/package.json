@@ -1,0 +1,46 @@
+{
+  "name": "@pizza-house/server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pizza House platform API server",
+  "main": "server.js",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "npm run seed:catalogue && npm run seed:inventory && npm run seed:admin",
+    "seed:admin": "node seed/seedAdmin.js",
+    "seed:catalogue": "node seed/seedCatalogue.js",
+    "seed:inventory": "node seed/seedInventory.js",
+    "seed:inventory:reset": "node seed/seedInventory.js --reset",
+    "seed:reset:orders": "node seed/resetOrders.js",
+    "seed:reset:users": "node seed/resetUsers.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.0",
+    "morgan": "^1.12.1",
+    "node-cron": "^4.6.0",
+    "razorpay": "^2.9.8",
+    "resend": "^6.28.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2",
+    "vitest": "^5.0.0"
+  }
+}

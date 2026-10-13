@@ -1,0 +1,54 @@
+name: pizza-house
+
+# Brings up the whole stack: MongoDB, the API, and the web client behind nginx.
+#
+#   cp server/.env.example server/.env   # fill in JWT_SECRET and the admin block
+#   docker compose up --build
+#   docker compose exec api npm run seed --workspace @pizza-house/server
+#
+# The web client is then on http://localhost:8080.
+
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    # Secrets (JWT_SECRET, RESEND_API_KEY, RAZORPAY_*, ADMIN_*) come from here.
+    env_file:
+      - server/.env
+    # These override whatever .env says: inside Compose the database is a
+    # service name, and the browser reaches the app through the web container.
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGO_URI: mongodb://mongo:27017/pizza-delivery
+      CLIENT_URL: http://localhost:8080
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    restart: unless-stopped
+    ports:
+      - '8080:80'
+    depends_on:
+      - api
+
+volumes:
+  mongo-data:
